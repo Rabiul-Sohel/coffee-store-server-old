@@ -132,7 +132,7 @@ async function run() {
 run().catch(console.dir);
 
 app.get("/", (req, res) => {
-  res.send("hello coffee world");
+  res.send("hello coffee world 2");
 });
 
 if (process.env.PORT) {
