@@ -8,6 +8,14 @@ const port = process.env.PORT || 3000;
 // middleware
 app.use(cors())
 app.use(express.json())
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
 
 // const db_user = process.env.DB_USER
 // const db_password = process.env.DB_PASSWORD
