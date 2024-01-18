@@ -9,15 +9,14 @@ const port = process.env.PORT || 3000;
 app.use(cors())
 app.use(express.json())
 
-const db_user = process.env.DB_USER
-const db_password = process.env.DB_PASSWORD
+// const db_user = process.env.DB_USER
+// const db_password = process.env.DB_PASSWORD
 
 
 
 
 
-const uri =
-  `mongodb+srv://${db_user}:${db_password}@cluster0.7tma2za.mongodb.net/?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.7tma2za.mongodb.net/?retryWrites=true&w=majority`;
  
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -30,20 +29,18 @@ const client = new MongoClient(uri, {
 });
 
 
-const users = [
-  { name: 'rabiul' },
-  {name: 'sohel'}
-]
+
 
 async function run() {
-  const db = client.db('coffeDB')
-  const coffeCollection = db.collection('coffee')
-  const userCollection = client.db('coffeeDB').collection('users')
-  
   try {
     // Connect the client to the server	(optional starting in v4.7)
 
     await client.connect();
+
+    
+    const db = client.db("coffeDB");
+    const coffeCollection = db.collection("coffee");
+    const userCollection = client.db("coffeeDB").collection("users");
 
     app.post('/coffee', async (req, res) => {
       const coffee = req.body;
@@ -100,7 +97,7 @@ async function run() {
       const result = await cursor.toArray()
       res.send(result)
     })
-    app.patch('/user', async (req, res) => {
+    app.patch('/users', async (req, res) => {
       const users = req.body;
       const filter = { email: users.email }
       const options = {upsert: true}
@@ -109,7 +106,7 @@ async function run() {
           lastLoggedTime: users.lastLoggedTime
         },
       };
-      const result = await userCollection.updateOne(filter, updatedUser, options)
+      const result = await userCollection.updateOne(filter, updatedUser)
       res.send(result)
     })
     // app.get('/user/:id')
@@ -119,6 +116,7 @@ async function run() {
       const result = await userCollection.deleteOne(query)
       res.send(result)
     })
+    
 
 
     // Send a ping to confirm a successful connection
@@ -133,10 +131,12 @@ async function run() {
 }
 run().catch(console.dir);
 
+app.get("/", (req, res) => {
+  res.send("hello coffee world");
+});
 
-app.get('/', (req, res) => {
-  res.send('hello coffee world')
-})
-app.listen(port, () => {
-  console.log(`app is running on port ${port}`);
-})
+if (process.env.PORT) {
+  app.listen(process.env.PORT)
+}
+
+module.exports = app;
